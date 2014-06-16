@@ -154,10 +154,13 @@ AC_CHECK_HEADER([crm/attrd.h],
 	[],
 	[AC_MSG_ERROR("Not found crm/attrd.h")]
 	)
-AC_CHECK_HEADER([crm/common/mainloop.h],
+AC_CHECK_HEADERS([curses.h crm/common/mainloop.h],
 	[],
-	[AC_MSG_ERROR("Not found crm/common/mainloop.h")]
-	)
+	[AC_MSG_ERROR("Not found crm/common/mainloop.h")],
+	[[#ifdef HAVE_CURSES_H
+	# include <curses.h>
+	#endif
+	]])
 
 # RA
 AC_CHECK_HEADER([glue_config.h],
