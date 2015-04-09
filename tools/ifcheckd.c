@@ -174,8 +174,11 @@ static struct crm_option long_options[] = {
         {"verbose", 0, 0, 'V', "\tIncrease debug output"},
         {"pid-file", 1, 0, 'p', "\t(Advanced) Daemon pid file location"},
         {"foreground", 0, 0, 'f', "\tStart application in foreground"},
+        {"private", 0, 0, 'P', "\tIf this creates a new attribute, never write the attribute to the CIB"},
         {NULL, 0, 0, 0}
 };
+
+static int attr_options = attrd_opt_none;
 
 void ifcheckd_init(void);
 void ifcheckd_finalize(void);
@@ -368,7 +371,7 @@ _delete_attr_iface(uint32_t iface_no,
         return FALSE;
     }
     if (attrd_update_delegate(NULL, 'D', NULL, if_attr, if_value,
-                    attr_section, attr_set, NULL, NULL, FALSE) != pcmk_ok) {
+                    attr_section, attr_set, NULL, NULL, attr_options) != pcmk_ok) {
         crm_debug("Could not delete %s", if_attr);
         return FALSE;
     }
@@ -406,7 +409,7 @@ _update_attr_iface(uint32_t iface_no,
         return FALSE;
     }
     if (attrd_update_delegate(NULL, 'U', NULL, if_attr, if_value,
-                    attr_section, attr_set, NULL, NULL, FALSE) != pcmk_ok) {
+                    attr_section, attr_set, NULL, NULL, attr_options) != pcmk_ok) {
         crm_debug("Could not update %s=%s", if_attr, if_value);
         return FALSE;
     }
@@ -979,6 +982,11 @@ main(int argc, char **argv)
             free(pid_file);
             pid_file = strdup(optarg);
             break;
+#ifdef HAVE_ATOMIC_ATTRD
+        case 'P':
+            set_bit(attr_options, attrd_opt_private);
+            break;
+#endif
         case '?':
         case '$':
             crm_help(flag, EX_OK);

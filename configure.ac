@@ -225,6 +225,12 @@ fi
 RHEL_VER="$rhelver"
 AC_SUBST(RHEL_VER)
 
+AC_CONFIG_HEADER(include/config.h)
+/usr/sbin/pacemakerd -F | grep -q "atomic-attrd"
+if test $? = 0; then
+	AC_DEFINE_UNQUOTED(HAVE_ATOMIC_ATTRD, 1, Support the new atomic attrd)
+fi
+
 # Checks for library functions.
 
 AC_CONFIG_FILES(Makefile	\

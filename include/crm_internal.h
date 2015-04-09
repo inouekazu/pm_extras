@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#  include <config.h>
+
 struct crm_option {
     /* Fields from 'struct option' in getopt.h */
     /* name of long option */
@@ -37,3 +39,21 @@ struct crm_option {
     const char *desc;
     long flags;
 };
+
+static inline long long
+crm_set_bit(const char *function, const char *target, long long word, long long bit)
+{
+    long long rc = (word | bit);
+
+    if (rc == word) {
+        /* Unchanged */
+    } else if (target) {
+        crm_trace("Bit 0x%.8llx for %s set by %s", bit, target, function);
+    } else {
+        crm_trace("Bit 0x%.8llx set by %s", bit, function);
+    }
+
+    return rc;
+}
+
+#  define set_bit(word, bit) word = crm_set_bit(__FUNCTION__, NULL, word, bit)
